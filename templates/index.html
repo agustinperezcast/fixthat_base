@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Contactos · Gestor{% endblock %}
+{% block content %}
+  <div class="page-heading">
+    <div>
+      <h1>Registros</h1>
+      <p class="muted">Administra tus contactos guardados en SQLite.</p>
+    </div>
+  </div>
+
+  {% if contacts %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Nombre</th><th>Correo electrónico</th><th>Notas</th><th>Creado</th><th>Acciones</th></tr>
+        </thead>
+        <tbody>
+          {% for contact in contacts %}
+            <tr>
+              <td data-label="Nombre"><strong>{{ contact.name }}</strong></td>
+              <td data-label="Correo electrónico">{{ contact.email or '—' }}</td>
+              <td data-label="Notas">{{ contact.notes or '—' }}</td>
+              <td data-label="Creado">{{ contact.created_at }}</td>
+              <td data-label="Acciones" class="actions">
+                <a class="button button-small" href="{{ url_for('edit_contact', contact_id=contact.id) }}">Editar</a>
+                <form method="post" action="{{ url_for('delete_contact', contact_id=contact.id) }}" onsubmit="return confirm('¿Eliminar este registro?');">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                  <button class="button button-small button-danger" type="submit">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <section class="empty-state">
+      <h2>Aún no hay registros</h2>
+      <p class="muted">Añade tu primer contacto para empezar.</p>
+      <a class="button button-primary" href="{{ url_for('create_contact') }}">Crear registro</a>
+    </section>
+  {% endif %}
+{% endblock %}
